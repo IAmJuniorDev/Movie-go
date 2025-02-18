@@ -1,19 +1,15 @@
 import React from 'react';
 
-export class APP extends React.Component{
-  render(){
+export const APP= async()=>{
     return(
       <App/>
     )
-  }
 }
 
-class App extends React.Component{
-  render(){
+const App = async()=>{
     return(
       <div>
         <h1>Boss</h1>
       </div>
     )
-  }
 }
