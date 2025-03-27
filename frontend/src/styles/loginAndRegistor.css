@@ -1,0 +1,71 @@
+.login-registor-container{
+  min-height:100vh;
+  /* background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); */
+  /* color: white; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-registor-container .content-container {
+  width: 450px;
+  background-color: var(--main-bg-trans);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 16px;
+  padding:2rem 2rem 3rem 2rem;
+}
+
+.login-registor-container .content-container h1{
+  margin:0;
+}
+
+.login-registor-container .content-container main{
+  width:90%;
+}
+
+.login-container{
+  display:grid;
+  margin-top:2rem;
+  border: 2px solid white;
+  border-radius: 8px;
+  padding:40px 20px 20px 20px;
+  justify-content: center;
+}
+
+.login-container .ant-form-item-label > label {
+  color: white !important;
+}
+
+.login-container .remember-me{
+  margin:0 0 5px 0;
+}
+
+.login-container .remember-me .ant-checkbox-wrapper {
+  color: white !important;
+  margin-left:0!important;
+}
+
+.login-container .remember-me .css-dev-only-do-not-override-240cud{
+  margin-inline-start: 0 !important;
+}
+
+.login-container .register .ant-col-16,
+.login-container .button .ant-col-16{
+  max-width:100% !important;
+}
+
+.login-container .button .css-dev-only-do-not-override-240cud .ant-col-offset-8{
+  margin-inline-start: 0 !important;
+}
+
+.login-container .button .ant-form-item-control-input-content{
+  display:flex;
+  justify-content: center;
+}
+
+.login-container .button .ant-form-item-control-input{
+  display: flex;
+  justify-content: center;
+}
