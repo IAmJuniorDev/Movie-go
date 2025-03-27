@@ -90,6 +90,19 @@ const Home = () => {
           </div>
         </div>
       </nav>
+      <div className="content">
+        <h1 id="title">Money Heist</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam perferendis temporibus nisi nesciunt excepturi laboriosam praesentium quas, rerum adipisci dicta ab dolorem! Itaque, corporis fugit!</p>
+        <div className="details">
+          <h6>A Netfix Origin Film</h6>
+          <h5 id="gen">Thiller</h5>
+          <h4>2025</h4>
+          <h3 id="rate"><span>IMDB</span><i className="bi bi-star-fill"></i> 9.6</h3>
+        </div>
+        <div className="btns">
+          <a href="#" id="paly">Watch <i class="bi bi-play-fill"></i> <i class="bi bi-badge-hd-fill top-right"></i></a>
+        </div>
+      </div>
     </div>
   );
 };

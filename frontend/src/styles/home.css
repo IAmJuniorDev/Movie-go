@@ -193,3 +193,123 @@
   margin: 0 5px 0 5px;
   font-weight: 500;
 }
+
+.home-container .content{
+  position:relative;
+  color:#fff;
+  margin-top:50px;
+  padding-left:50px;
+}
+
+.home-container .content h1{
+  font-size:50px;
+}
+
+.home-container .content p{
+  font-size:11px;
+  width:350px;
+  word-break:break-all;
+}
+
+.home-container .content .details{
+  display:flex;
+  align-items:center;
+  margin-top:10px;
+}
+
+.home-container .content .details h6{
+  color:rgba(255,255,255,0.8);
+  font-size:10px;
+  margin-right:10px;
+}
+
+.home-container .content .details h5{
+  color:rgba(142,230,48,1);
+  font-size:10px;
+  margin-right:10px;
+}
+
+.home-container .content .details h4{
+  color:#fff;
+  font-size:10px;
+  margin-right:10px;
+}
+
+.home-container .content .details h3{
+  color:#fff;
+  display:flex;
+  align-items:center;
+  font-size:10px;
+}
+
+.home-container .content .details h3 span{
+  background-color:yellow;
+  color:var(--black);
+  padding: 0 3px;
+  margin: 0 5px 0 5px;
+  font-weight: 500;
+}
+
+.home-container .content .details h3 i{
+  margin-right:5px;
+}
+
+.home-container .content .btns{
+  margin-top:20px;
+  display:flex;
+  align-items:center;
+}
+
+.home-container .content .btns .top-right{
+  position:absolute;
+  top:-8px;
+  right:-5px;
+}
+
+.home-container .content .btns a{
+  position: relative;
+  padding:8px 12px;
+  font-size:15px;
+  font-weight:600;
+  background:linear-gradient(90deg,#00bdff,#0079ff);
+  border-radius:5px;
+  color:#fff;
+  margin-left:20px;
+  text-decoration:none;
+  animation: button 3s linear infinite;}
+
+  @keyframes button {
+    0% {
+      background: linear-gradient(0deg, #00bdff, #0079ff);
+    }
+    10% {
+      background: linear-gradient(36deg, #00bdff, #0079ff);
+    }
+    20% {
+      background: linear-gradient(72deg, #00bdff, #0079ff);
+    }
+    30% {
+      background: linear-gradient(108deg, #00bdff, #0079ff);
+    }
+    40% {
+      background: linear-gradient(144deg, #00bdff, #0079ff);
+    }
+    50% {
+      background: linear-gradient(180deg, #00bdff, #0079ff);
+    }
+    60% {
+      background: linear-gradient(216deg, #00bdff, #0079ff);
+    }
+    70% {
+      background: linear-gradient(252deg, #00bdff, #0079ff);
+    }
+    80% {
+      background: linear-gradient(288deg, #00bdff, #0079ff);
+    }
+    90% {
+      background: linear-gradient(324deg, #00bdff, #0079ff);
+    }
+    100% {
+      background: linear-gradient(360deg, #00bdff, #0079ff);
+    }
+  }
