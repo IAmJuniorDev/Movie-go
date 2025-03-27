@@ -1,0 +1,30 @@
+# Go binary files
+/bin
+/obj
+
+# Go build cache
+/pkg
+
+# Dependency directories
+/vendor/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Go test coverage output
+.coverage/
+
+# Go module files
+go.sum
+go.mod
+
+tmp/
