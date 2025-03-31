@@ -20,7 +20,10 @@ func InitDB() {
 		log.Fatal("Failed to connect to MySQL:", err)
 	}
 
-	if err := DB.AutoMigrate(&models.Movie{}, &models.User{}); err != nil {
+	if err := DB.AutoMigrate(
+		&models.Movie{},
+		&models.User{},
+	); err != nil {
 		log.Fatal("Failed to migrate database:", err)
 	}
 
