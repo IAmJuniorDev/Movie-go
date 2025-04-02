@@ -71,6 +71,11 @@ func CreateUser(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte("Username already exists"))
 		return
 	}
+	if err := db.DB.Where("email = ?", payload.Email).First(&existingUser).Error; err == nil {
+		ctx.SetStatusCode(409)
+		ctx.SetBody([]byte("email already exists"))
+		return
+	}
 	hash, err := EncryptAES(payload.Password, os.Getenv("PASS_SECRET"))
 	if err != nil {
 		ctx.SetStatusCode(500)

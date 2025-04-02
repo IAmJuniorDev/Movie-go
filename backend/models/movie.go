@@ -3,13 +3,13 @@ package models
 // Movie Model
 type Movie struct {
 	ID            int64   `json:"id" gorm:"primaryKey"`
-	ImdbID        string  `json:"imdbID"`
-	TitleEN       string  `json:"title_en"`
-	TitleTH       string  `json:"title_th"`
+	ImdbID        string  `json:"imdbID" gorm:"primaryKey"`
+	TitleEN       string  `json:"title_en" gorm:"type:varchar(100)"`
+	TitleTH       string  `json:"title_th" gorm:"type:varchar(150)"`
 	Year          int     `json:"year"`
 	Rating        float64 `json:"rating"`
-	MovieType     string  `json:"movie_type"`
-	MainGenre     string  `json:"main_genre"`
+	MovieType     string  `json:"movie_type" gorm:"type:varchar(25)"`
+	MainGenre     string  `json:"main_genre" gorm:"type:varchar(25)"`
 	IsSuperhero   bool    `json:"is_superhero"`
 	IsFiction     bool    `json:"is_fiction"`
 	IsAction      bool    `json:"is_action"`
@@ -32,8 +32,9 @@ type Movie struct {
 	IsWestern     bool    `json:"is_western"`
 	IsSport       bool    `json:"is_sport"`
 	IsMusical     bool    `json:"is_musical"`
-	ImageV        []byte  `json:"image_v" gorm:"type:blob"`
-	ImageH        []byte  `json:"image_h" gorm:"type:blob"`
+	ImageV        []byte  `json:"image_v" gorm:"type:LONGBLOB"`
+	ImageH        []byte  `json:"image_h" gorm:"type:LONGBLOB"`
+	Video         string  `json:"video"`
 }
 
 // MoviesPayload for batch creation

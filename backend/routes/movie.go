@@ -2,14 +2,15 @@ package routes
 
 import (
 	controllers "github.com/IAmJuniorDev/API-GO/controllers"
+	"github.com/IAmJuniorDev/API-GO/middleware"
 	"github.com/fasthttp/router"
 )
 
-// RegisterMovieRoutes registers movie-related routes
 func MovieRoutes(r *router.Router, prefix string) {
-	r.GET(prefix, controllers.GetMovies)
-	r.POST(prefix, controllers.CreateMovies)
-	r.GET(prefix+"/{id}", controllers.GetMovie)
-	r.PUT(prefix+"/{id}", controllers.UpdateMovie)
-	r.DELETE(prefix+"/{id}", controllers.DeleteMovie)
+	r.GET(prefix, middleware.VerifyTokenAndAuthorization(controllers.GetMovies))
+	r.POST(prefix, middleware.VerifyTokenAndAuthorization(controllers.CreateMovies))
+	r.GET(prefix+"/{id}", middleware.VerifyTokenAndAuthorization(controllers.GetMovie))
+	r.PUT(prefix+"/addpic/{id}", middleware.VerifyTokenAndAuthorization(controllers.AddPictureIntoMovie))
+	r.PUT(prefix+"/{id}", middleware.VerifyTokenAndAuthorization(controllers.UpdateMovie))
+	r.DELETE(prefix+"/{id}", middleware.VerifyTokenAndAuthorization(controllers.DeleteMovie))
 }

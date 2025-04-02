@@ -4,6 +4,7 @@ import { Button, Checkbox, Form, Input } from "antd";
 import { publicRequest } from "../axiosCall";
 import Swal from "sweetalert2";
 import Layout from "../components/mainLayout";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [form] = Form.useForm();
@@ -16,6 +17,16 @@ const Login = () => {
           title: "Login Successful",
           text: "Welcome back!",
         });
+        const token = res.data;
+        if (value.remember) {
+          Cookies.set("accessToken", token, {
+            expires: 15,
+            secure: true,
+            sameSite: "Strict",
+          });
+        } else {
+          sessionStorage.setItem("accessToken", token);
+        }
         form.resetFields();
       }
     } catch (error) {

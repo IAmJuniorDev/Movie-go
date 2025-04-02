@@ -27,39 +27,9 @@ func VerifyToken(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 		// backend session
 		auth := string(ctx.Request.Header.Peek("Authorization"))
-		cookie := string(ctx.Request.Header.Cookie("session_token"))
 		if auth == "" {
 			ctx.SetStatusCode(fasthttp.StatusUnauthorized)
 			ctx.SetBody([]byte("You are not authenticated! (auth)"))
-			return
-		}
-		if cookie == "" {
-			ctx.SetStatusCode(fasthttp.StatusUnauthorized)
-			ctx.SetBody([]byte("You are not authenticated! (cookie)"))
-			return
-		}
-		///////////
-		//cookie//
-		//////////
-		tokenString := cookie
-		token, err := jwt.ParseWithClaims(tokenString, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_SECRET")), nil
-		})
-		if err != nil || !token.Valid {
-			ctx.SetStatusCode(fasthttp.StatusForbidden)
-			ctx.SetBody([]byte("Token is not valid"))
-			return
-		}
-		claims, ok := token.Claims.(*jwt.MapClaims)
-		if !ok || claims == nil {
-			ctx.SetStatusCode(fasthttp.StatusForbidden)
-			ctx.SetBody([]byte("Token claims are not valid"))
-			return
-		}
-		exp := time.Unix(int64((*claims)["exp"].(float64)), 0)
-		if exp.Before(time.Now()) {
-			ctx.SetStatusCode(fasthttp.StatusForbidden)
-			ctx.SetBody([]byte("Expried user at token"))
 			return
 		}
 		////////
@@ -68,7 +38,7 @@ func VerifyToken(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 		tokenParts := strings.Split(auth, " ")
 		if len(tokenParts) != 2 {
 			ctx.SetStatusCode(fasthttp.StatusForbidden)
-			ctx.SetBody([]byte("Token format is invalid"))
+			ctx.SetBody([]byte("Token format is invalid token"))
 			return
 		}
 		tokenString1 := tokenParts[1]
@@ -92,20 +62,8 @@ func VerifyToken(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 			ctx.SetBody([]byte("Expried user at token"))
 			return
 		}
-		userID := (*claims)["id"].(string)
 		userID1 := (*claims1)["id"].(string)
-		if userID != userID1 {
-			ctx.SetStatusCode(fasthttp.StatusForbidden)
-			ctx.SetBody([]byte("Not match username"))
-			return
-		}
-		isAdmin := (*claims)["is_admin"].(bool)
 		isAdmin1 := (*claims1)["is_admin"].(bool)
-		if isAdmin != isAdmin1 {
-			ctx.SetStatusCode(fasthttp.StatusForbidden)
-			ctx.SetBody([]byte("not match status"))
-			return
-		}
 		ctx.SetUserValue("user", userID1)
 		ctx.SetUserValue("is_admin", isAdmin1)
 		next(ctx)

@@ -19,6 +19,7 @@
 
 .login-registor-container .content-container h1{
   margin:0;
+  color:white;
 }
 
 .login-registor-container .content-container main{
@@ -42,9 +43,11 @@
   margin:0 0 5px 0;
 }
 
-.login-container .remember-me .ant-checkbox-wrapper {
-  color: white !important;
+.login-container .remember-me .css-dev-only-do-not-override-1a3rktk .ant-col-offset-8 {
   margin-left:0!important;
+}
+.login-container .remember-me .css-dev-only-do-not-override-1a3rktk .ant-col-offset-8 .ant-checkbox-label{
+  color:white;
 }
 
 .login-container .remember-me .css-dev-only-do-not-override-240cud{
