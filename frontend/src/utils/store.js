@@ -3,7 +3,7 @@ import userReducer  from './userReducer'
 
 export default configureStore({
   reducer: {
-    userReducer: userReducer,
-    
+    user: userReducer,
   },
+  // devTools: process.env.NODE_ENV !== "production",
 })

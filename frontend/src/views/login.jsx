@@ -5,8 +5,11 @@ import { publicRequest } from "../axiosCall";
 import Swal from "sweetalert2";
 import Layout from "../components/mainLayout";
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { setUser } from "../utils/userReducer";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [form] = Form.useForm();
   const onFinish = async (value) => {
     try {
@@ -17,15 +20,16 @@ const Login = () => {
           title: "Login Successful",
           text: "Welcome back!",
         });
-        const token = res.data;
+        const data = res.data;
+        dispatch(setUser(data));
         if (value.remember) {
-          Cookies.set("accessToken", token, {
+          Cookies.set("accessToken", data.token, {
             expires: 15,
             secure: true,
             sameSite: "Strict",
           });
         } else {
-          sessionStorage.setItem("accessToken", token);
+          sessionStorage.setItem("accessToken", data.token);
         }
         form.resetFields();
       }

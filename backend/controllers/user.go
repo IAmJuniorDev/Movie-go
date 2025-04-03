@@ -22,6 +22,12 @@ type loginUser struct {
 	Password string `json:"password"`
 }
 
+type userModel struct {
+	User    string `json:"user"`
+	Token   string `json:"token"`
+	IsAdmin bool   `json:"isAdmin"`
+}
+
 func EncryptAES(plainText, key string) (string, error) {
 	block, err := aes.NewCipher([]byte(key)[:32]) // Ensure 32-byte key for AES-256
 	if err != nil {
@@ -132,6 +138,17 @@ func Login(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte("Error while generating token"))
 		return
 	}
+	responseData := userModel{
+		User:    user2.Username,
+		Token:   tokenString,
+		IsAdmin: user2.IsAdmin,
+	}
+	responseJSON, err := json.Marshal(responseData)
+	if err != nil {
+		ctx.SetStatusCode(500)
+		ctx.SetBody([]byte(`{"error": "Failed to create response"}`))
+		return
+	}
 	cook := fasthttp.Cookie{}
 	cook.SetKey("session_token")
 	cook.SetValue(tokenString)
@@ -140,7 +157,7 @@ func Login(ctx *fasthttp.RequestCtx) {
 	cook.SetSecure(true)
 	ctx.Response.Header.SetCookie(&cook)
 	ctx.SetStatusCode(200)
-	ctx.SetBody([]byte(tokenString))
+	ctx.SetBody(responseJSON)
 }
 
 func Logout(ctx *fasthttp.RequestCtx) {
@@ -183,6 +200,10 @@ func UnsetAdmin(ctx *fasthttp.RequestCtx) {
 	response, _ := json.Marshal(user)
 	ctx.SetStatusCode(200)
 	ctx.SetBody(response)
+}
+
+func CheckLogin(ctx *fasthttp.RequestCtx) {
+
 }
 
 func GetsUser(ctx *fasthttp.RequestCtx) {
