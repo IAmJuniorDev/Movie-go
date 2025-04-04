@@ -7,8 +7,10 @@ import Layout from "../components/mainLayout";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setUser } from "../utils/userReducer";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [form] = Form.useForm();
   const onFinish = async (value) => {
@@ -32,6 +34,7 @@ const Login = () => {
           sessionStorage.setItem("accessToken", data.token);
         }
         form.resetFields();
+        navigate("/")
       }
     } catch (error) {
       console.error("Login Error:", error);

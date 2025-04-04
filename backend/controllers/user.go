@@ -28,6 +28,10 @@ type userModel struct {
 	IsAdmin bool   `json:"isAdmin"`
 }
 
+type Token struct {
+	Token string `json:"token"`
+}
+
 func EncryptAES(plainText, key string) (string, error) {
 	block, err := aes.NewCipher([]byte(key)[:32]) // Ensure 32-byte key for AES-256
 	if err != nil {
@@ -203,7 +207,41 @@ func UnsetAdmin(ctx *fasthttp.RequestCtx) {
 }
 
 func CheckLogin(ctx *fasthttp.RequestCtx) {
-
+	var Token Token
+	if err := json.Unmarshal(ctx.PostBody(), &Token); err != nil {
+		ctx.SetStatusCode(400)
+		ctx.SetBody([]byte("Invalid JSON"))
+		return
+	}
+	token1, err := jwt.ParseWithClaims(Token.Token, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil || !token1.Valid {
+		ctx.SetStatusCode(fasthttp.StatusForbidden)
+		ctx.SetBody([]byte("Token is not valid"))
+		return
+	}
+	claims1, ok := token1.Claims.(*jwt.MapClaims)
+	if !ok || claims1 == nil {
+		ctx.SetStatusCode(fasthttp.StatusForbidden)
+		ctx.SetBody([]byte("Token claims are not valid"))
+		return
+	}
+	exp1 := time.Unix(int64((*claims1)["exp"].(float64)), 0)
+	if exp1.Before(time.Now()) {
+		ctx.SetStatusCode(fasthttp.StatusForbidden)
+		ctx.SetBody([]byte("Expried user at token"))
+		return
+	}
+	userID1 := (*claims1)["id"].(string)
+	isAdmin1 := (*claims1)["is_admin"].(bool)
+	var user userModel
+	user.User = userID1
+	user.IsAdmin = isAdmin1
+	user.Token = Token.Token
+	response, _ := json.Marshal(user)
+	ctx.SetStatusCode(200)
+	ctx.SetBody(response)
 }
 
 func GetsUser(ctx *fasthttp.RequestCtx) {

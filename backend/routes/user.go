@@ -13,6 +13,7 @@ func UserRoutes(r *router.Router, prefix string) {
 	r.GET(prefix+"/logout", controllers.Logout)
 	r.POST(prefix+"/set-admin/{id}", controllers.SetAdmin)
 	r.POST(prefix+"/unset-admin/{id}", controllers.UnsetAdmin)
+	r.POST(prefix+"/check-login", controllers.CheckLogin)
 
 	r.POST(prefix, controllers.CreateUser)
 	r.GET(prefix, middleware.VerifyTokenAndAdmin(controllers.GetsUser))
