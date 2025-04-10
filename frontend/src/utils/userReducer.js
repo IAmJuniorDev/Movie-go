@@ -5,6 +5,7 @@ export const userReducer = createSlice({
   initialState: {
     user:"",
     token:"",
+    exp:0,
     isAdmin:false,
   },
   reducers: {

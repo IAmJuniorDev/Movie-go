@@ -10,7 +10,7 @@ const Package = () => {
     {
       title: "Free-tiar",
       available: ["360p", "480p", "720p"],
-      price: "Free",
+      price: 0,
       life_time: "7",
     },
     {
@@ -57,8 +57,8 @@ const Package = () => {
                     );
                   })}
                   <p>
-                    Price : {e.price}
-                    {e.price !== "Free" ? " $" : ""}
+                    Price : {e.price=0?"Free":e.price}
+                    {e.price !== 0 ? " $" : ""}
                   </p>
                   <p>
                     Life time : {time} {day}
@@ -70,6 +70,7 @@ const Package = () => {
                           data: {
                             title: e.title,
                             lifeTime: e.life_time,
+                            price: e.price,
                           },
                         },
                       });

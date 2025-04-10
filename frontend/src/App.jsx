@@ -13,10 +13,10 @@ const App = () => {
       {/* non control access */}
       <Route path="/login" element={<Login />} />
       <Route path="/registor" element={<Registor />} />
+      <Route path="/package" element={<Package />} />
       {/* control access */}
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Home />} />
-        <Route path="/package" element={<Package />} />
         <Route path="/admin" element={<Admin />} />
       </Route>
     </Routes>

@@ -23,9 +23,10 @@ type loginUser struct {
 }
 
 type userModel struct {
-	User    string `json:"user"`
-	Token   string `json:"token"`
-	IsAdmin bool   `json:"isAdmin"`
+	User    string    `json:"user"`
+	Token   string    `json:"token"`
+	Exp     time.Time `json:"exp"`
+	IsAdmin bool      `json:"isAdmin"`
 }
 
 type Token struct {
@@ -145,6 +146,7 @@ func Login(ctx *fasthttp.RequestCtx) {
 	responseData := userModel{
 		User:    user2.Username,
 		Token:   tokenString,
+		Exp:     user2.TimeStamp,
 		IsAdmin: user2.IsAdmin,
 	}
 	responseJSON, err := json.Marshal(responseData)

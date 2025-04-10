@@ -23,10 +23,13 @@ const Login = () => {
           text: "Welcome back!",
         });
         const data = res.data;
+        const expiryDate = new Date(data.exp);
+        const expUnix = Math.floor(expiryDate.getTime() / 1000);
+        data.exp = expUnix;
         dispatch(setUser(data));
         if (value.remember) {
           Cookies.set("accessToken", data.token, {
-            expires: 15,
+            expires: expiryDate,
             secure: true,
             sameSite: "Strict",
           });
