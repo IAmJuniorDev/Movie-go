@@ -1,73 +1,72 @@
-import React, { useState } from "react";
-import { Text1, Text2, Text3, Text4 } from "../../components/admins/textService";
-import { publicRequest } from "../../axiosCall.js";
+import React, { useEffect, useState, useCallback } from "react";
+import { userRequest } from "../../axiosCall.js";
 import TableLayout from "../../components/admins/adminLayout.jsx";
+import Swal from "sweetalert2";
+import { useDispatch, useSelector } from "react-redux";
+import { setMovieAdmin } from "../../utils/movieAdminReducer.js";
+import { Box } from "@mui/material";
 
 const MovieEdit = () => {
-  const [id, setId] = useState("");
-  const [vImage, setVImage] = useState(null);
-  const [hImage, setHImage] = useState(null);
-
-  const handleVImageChange = (e) => {
-    setVImage(e.target.files[0]);
-  };
-
-  const handleHImageChange = (e) => {
-    setHImage(e.target.files[0]);
-  };
+  const dispatch = useDispatch();
+  const movieAdmin = useSelector((state) => state.movieAdmin);
+  const [headers, setHeaders] = useState([]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!id || !vImage || !hImage) {
-      alert("Please provide all fields!");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("image_v", vImage);
-    formData.append("image_h", hImage);
-
-    try {
-      const res = await publicRequest.put(`/movies/addpic/${id}`, formData);
-
-      if (res.status === 200) {
-        alert("Update successful!");
-      } else {
-        alert("Error occurred while updating.");
-      }
-    } catch (error) {
-      console.error("Error during upload:", error);
-      alert("Error during upload.");
-    }
+    console.log(e);
   };
 
-  const headers = ["ID", "ImdbID", "TitleEn", "TitleTh", "Year", "Rating", "Type"];
-  const data = [
-    {
-      id: 1,
-      imdbid: "tt1234567",
-      titleen: "The Boys",
-      titleth: "เดอะ บอยส์",
-      year: 2022,
-      rating: 9.3,
-      genre: "Action",
-      type: "series",
-    },
-    {
-      id: 2,
-      imdbid: "tt9876543",
-      titleen: "Stranger Things",
-      titleth: "สเตรนเจอร์ ธิงส์",
-      year: 2023,
-      rating: 8.9,
-      genre: "Sci-Fi",
-      type: "series",
+  const getMovie = useCallback(async () => {
+    try {
+      Swal.fire({
+        title: "Loading...",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      const res = await userRequest.get("/movies/admin");
+      if (res.status === 200) {
+        dispatch(setMovieAdmin(res.data));
+        setHeaders(Object.keys(res.data[0] || {}));
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: `The data from movie is already retrieved`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `${err}`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      console.log(err);
     }
-  ];
+  }, [dispatch]);
+
+  useEffect(() => {
+    // If movieAdmin is undefined, empty, or contains empty objects, fetch.
+    if (!movieAdmin || movieAdmin.length === 0 || Object.keys(movieAdmin[0] || {}).length === 0) {
+      getMovie();
+    } else {
+      setHeaders(Object.keys(movieAdmin[0] || {}));
+    }
+  }, [movieAdmin, getMovie]);
 
   return (
-    <TableLayout headers={headers} data={data} onAction={handleSubmit} />
+    <Box width={1440}>
+      {movieAdmin && movieAdmin.length > 0 ? (
+        <TableLayout
+          headers={headers}
+          data={movieAdmin}
+          onAction={handleSubmit}
+        />
+      ) : null}
+    </Box>
   );
 };
 

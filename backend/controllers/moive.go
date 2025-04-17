@@ -10,6 +10,20 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+type Request struct {
+	Fields []string `json:"fields"`
+}
+
+type MovieAdmin struct {
+	ImdbID    string  `json:"imdb_id" gorm:"primaryKey"`
+	TitleEN   string  `json:"title_en" gorm:"type:varchar(100)"`
+	TitleTH   string  `json:"title_th" gorm:"type:varchar(150)"`
+	Year      int     `json:"year"`
+	Rating    float64 `json:"rating"`
+	MovieType string  `json:"movie_type" gorm:"type:varchar(25)"`
+	MainGenre string  `json:"main_genre" gorm:"type:varchar(25)"`
+}
+
 func CreateMovies(ctx *fasthttp.RequestCtx) {
 	var payload models.MoviesPayload
 	if err := json.Unmarshal(ctx.PostBody(), &payload); err != nil {
@@ -38,6 +52,16 @@ func GetMovies(ctx *fasthttp.RequestCtx) {
 		db.DB.Find(&movies)
 	}
 	response, _ := json.Marshal(movies)
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.SetBody(response)
+}
+
+func GetMoviesAdmin(ctx *fasthttp.RequestCtx) {
+	var movieAdmin []MovieAdmin
+	db.DB.Model(&models.Movie{}).
+		Select("imdb_id, title_en, title_th, year, rating, movie_type, main_genre").
+		Find(&movieAdmin)
+	response, _ := json.Marshal(movieAdmin)
 	ctx.SetStatusCode(fasthttp.StatusOK)
 	ctx.SetBody(response)
 }
