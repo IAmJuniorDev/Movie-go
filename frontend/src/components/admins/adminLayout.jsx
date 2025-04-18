@@ -1,4 +1,5 @@
 import {
+  Box,
   Paper,
   Table,
   TableContainer,
@@ -10,6 +11,9 @@ import {
   TableSortLabel,
   TablePagination,
 } from "@mui/material";
+import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
+import NoteAddOutlinedIcon from '@mui/icons-material/NoteAddOutlined';
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import { useState } from "react";
 
 function descendingComparator(a, b, orderBy) {
@@ -28,7 +32,8 @@ const TableLayout = ({ headers, data, onAction }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState(
     headers && headers.length > 0 ? headers[0].toLowerCase() : ""
-  );  const [page, setPage] = useState(0);
+  );
+  const [page, setPage] = useState(0);
   const rowsPerPage = 10;
 
   const handleRequestSort = (property) => {
@@ -75,19 +80,53 @@ const TableLayout = ({ headers, data, onAction }) => {
         </TableHead>
         <TableBody>
           {paginatedData.map((row, rowIndex) => {
-            return(
-            <TableRow key={rowIndex}>
-              <TableCell align="center">
-                <Button onClick={() => onAction(row.id)}>Action</Button>
-                <Button onClick={() => console.log(row[0])}>Action</Button>
-              </TableCell>
-              {headers.map((header, colIndex) => (
-                <TableCell key={colIndex} align="center">
-                  {row[header.toLowerCase()] || "-"}
+            return (
+              <TableRow key={rowIndex}>
+                <TableCell align="center" sx={{display:"flex"}}>
+                  <Box
+                    component="a"
+                    onClick={() => onAction(row.id)}
+                    sx={(theme) => ({
+                      justifyContent: "center",
+                      alignItems: "center",
+                      cursor: "pointer",
+                      display: "flex",
+                      color: theme.palette.grey[500],
+                      textDecoration: "none",
+                      margin:"0 5px 0 0",
+                      "&:hover": {
+                        color: theme.palette.primary.main, 
+                      },
+                    })}
+                  >
+                    <ModeEditOutlinedIcon />
+                  </Box>
+                  <Box
+                    component="a"
+                    onClick={() => onAction(row.id)}
+                    sx={(theme) => ({
+                      justifyContent: "center",
+                      alignItems: "center",
+                      cursor: "pointer",
+                      display: "flex",
+                      color: theme.palette.grey[500],
+                      textDecoration: "none",
+                      "&:hover": {
+                        color: theme.palette.primary.main, 
+                      },
+                    })}
+                  >
+                    <DeleteForeverOutlinedIcon />
+                  </Box>
                 </TableCell>
-              ))}
-            </TableRow>
-          )})}
+                {headers.map((header, colIndex) => (
+                  <TableCell key={colIndex} align="center">
+                    {row[header.toLowerCase()] || "-"}
+                  </TableCell>
+                ))}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
       <TablePagination
