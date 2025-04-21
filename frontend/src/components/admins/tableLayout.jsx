@@ -85,7 +85,7 @@ const TableLayout = ({ headers, data, onAction }) => {
                 <TableCell align="center" sx={{display:"flex"}}>
                   <Box
                     component="a"
-                    onClick={() => onAction(row.id)}
+                    onClick={() => onAction(row)}
                     sx={(theme) => ({
                       justifyContent: "center",
                       alignItems: "center",
