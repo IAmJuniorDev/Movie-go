@@ -7,8 +7,10 @@ import (
 )
 
 func MovieRoutes(r *router.Router, prefix string) {
-	r.GET(prefix, middleware.VerifyTokenAndAuthorization(controllers.GetMovies))
 	r.GET(prefix+"/admin", middleware.VerifyTokenAndAdmin(controllers.GetMoviesAdmin))
+	r.GET(prefix+"/admin/{id}", middleware.VerifyTokenAndAdmin(controllers.GetMovieImage))
+
+	r.GET(prefix, middleware.VerifyTokenAndAuthorization(controllers.GetMovies))
 	r.POST(prefix, middleware.VerifyTokenAndAuthorization(controllers.CreateMovies))
 	r.GET(prefix+"/{id}", middleware.VerifyTokenAndAuthorization(controllers.GetMovie))
 	r.PUT(prefix+"/addpic/{id}", middleware.VerifyTokenAndAuthorization(controllers.AddPictureIntoMovie))

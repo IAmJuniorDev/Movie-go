@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
-import "../styles/home.css";
-import { item } from "../assets/jsons/mockup-movie";
-import video from "../assets/video/jurasic world.webm";
-import profileImage from "../assets/images/user.jpg";
-import Mjson from "../assets/jsons/movie.json";
-import Layout from "../components/mainLayout";
+import "styles/home.css";
+import { item } from "assets/jsons/mockup-movie";
+import video from "assets/video/jurasic world.webm";
+import profileImage from "assets/images/user.jpg";
+import Mjson from "assets/jsons/movie.json";
+import Layout from "components/mainLayout";
 
 const Home = () => {
   const [selectedYear, setSelectedYear] = useState(null);

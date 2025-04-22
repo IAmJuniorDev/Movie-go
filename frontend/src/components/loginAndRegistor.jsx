@@ -1,4 +1,4 @@
-import "../styles/loginAndRegistor.css";
+import "styles/loginAndRegistor.css";
 
 const LoginAndRegistor = ({ children,data }) => {
   return (

@@ -1,12 +1,12 @@
 import React from "react";
-import LoginAndRegistor from "../components/loginAndRegistor";
+import LoginAndRegistor from "components/loginAndRegistor";
 import { Button, Checkbox, Form, Input } from "antd";
-import { publicRequest } from "../axiosCall";
+import { publicRequest } from "utils/axiosCall";
 import Swal from "sweetalert2";
-import Layout from "../components/mainLayout";
+import Layout from "components/mainLayout";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { setUser } from "../utils/userReducer";
+import { setUser } from "libs/redux/userReducer";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {

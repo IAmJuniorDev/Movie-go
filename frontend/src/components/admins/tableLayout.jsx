@@ -10,10 +10,12 @@ import {
   Button,
   TableSortLabel,
   TablePagination,
+  useTheme,
 } from "@mui/material";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
-import NoteAddOutlinedIcon from '@mui/icons-material/NoteAddOutlined';
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import NoteAddOutlinedIcon from "@mui/icons-material/NoteAddOutlined";
+import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import { useState } from "react";
 
 function descendingComparator(a, b, orderBy) {
@@ -28,7 +30,14 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-const TableLayout = ({ headers, data, onAction }) => {
+const TableLayout = ({
+  headers,
+  data,
+  onEdit,
+  onDelete,
+  onImageEdit = null,
+}) => {
+  const theme = useTheme();
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState(
     headers && headers.length > 0 ? headers[0].toLowerCase() : ""
@@ -82,41 +91,83 @@ const TableLayout = ({ headers, data, onAction }) => {
           {paginatedData.map((row, rowIndex) => {
             return (
               <TableRow key={rowIndex}>
-                <TableCell align="center" sx={{display:"flex"}}>
-                  <Box
-                    component="a"
-                    onClick={() => onAction(row)}
-                    sx={(theme) => ({
-                      justifyContent: "center",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      display: "flex",
-                      color: theme.palette.grey[500],
-                      textDecoration: "none",
-                      margin:"0 5px 0 0",
-                      "&:hover": {
-                        color: theme.palette.primary.main, 
-                      },
-                    })}
-                  >
-                    <ModeEditOutlinedIcon />
-                  </Box>
-                  <Box
-                    component="a"
-                    onClick={() => onAction(row.id)}
-                    sx={(theme) => ({
-                      justifyContent: "center",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      display: "flex",
-                      color: theme.palette.grey[500],
-                      textDecoration: "none",
-                      "&:hover": {
-                        color: theme.palette.primary.main, 
-                      },
-                    })}
-                  >
-                    <DeleteForeverOutlinedIcon />
+                <TableCell align="center">
+                  <Box component="span" sx={{display:"flex"}}>
+                    {onEdit && (
+                      <Box
+                        component="a"
+                        onClick={() => onEdit(row)}
+                        sx={(theme) => ({
+                          justifyContent: "center",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          display: "flex",
+                          color: theme.palette.grey[500],
+                          textDecoration: "none",
+                          margin: "0 5px 0 0",
+                          "&:hover": {
+                            color: theme.palette.primary.main,
+                          },
+                        })}
+                      >
+                        <ModeEditOutlinedIcon
+                          sx={{
+                            color:
+                              theme.palette.mode === "dark"
+                                ? theme.palette.grey[500]
+                                : theme.palette.primary.light,
+                          }}
+                        />
+                      </Box>
+                    )}
+                    {onImageEdit && (
+                      <Box
+                        component="a"
+                        onClick={() => onImageEdit(row.id)}
+                        sx={(theme) => ({
+                          justifyContent: "center",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          display: "flex",
+                          color: theme.palette.grey[500],
+                          textDecoration: "none",
+                          margin: "0 5px 0 0",
+                          "&:hover": {
+                            color: theme.palette.primary.main,
+                          },
+                        })}
+                      >
+                        <ImageOutlinedIcon
+                          sx={(theme) => ({
+                            color: theme.palette.warning.main,
+                          })}
+                        />
+                      </Box>
+                    )}
+                    {onDelete && (
+                      <Box
+                        component="a"
+                        onClick={() => onDelete(row.id)}
+                        sx={(theme) => ({
+                          justifyContent: "center",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          display: "flex",
+                          color: theme.palette.grey[500],
+                          textDecoration: "none",
+                          margin: "0 5px 0 0",
+                          "&:hover": {
+                            color: theme.palette.primary.main,
+                          },
+                        })}
+                      >
+                        <DeleteForeverOutlinedIcon
+                          sx={(theme) => ({
+                            color: theme.palette.error.light,
+                          })}
+                        />
+                      </Box>
+                    )}
                   </Box>
                 </TableCell>
                 {headers.map((header, colIndex) => (

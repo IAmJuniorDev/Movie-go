@@ -2,8 +2,8 @@ import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
-import { publicRequest } from "../axiosCall";
-import { setUser } from "./userReducer";
+import { publicRequest } from "../utils/axiosCall";
+import { setUser } from "libs/redux/userReducer";
 import Swal from "sweetalert2";
 
 const ProtectedRoute = () => {

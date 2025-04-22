@@ -1,4 +1,4 @@
-import "../styles/navbar.css";
+import "styles/navbar.css";
 
 const NavbarBottom = ()=>{
   return(

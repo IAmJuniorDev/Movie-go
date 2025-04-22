@@ -1,11 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Home from "./views/home";
-import Package from "./views/package";
-import Login from "./views/login";
-import Registor from "./views/registor";
-import Admin from "./views/admin";
-import ProtectedRoute from "./utils/ProtectedRoute";
+import Home from "views/home";
+import Package from "views/package";
+import Login from "views/login";
+import Registor from "views/registor";
+import Admin from "views/admin";
+import ProtectedRoute from "libs/ProtectedRoute";
 
 const App = () => {
   return (
@@ -17,7 +17,7 @@ const App = () => {
       {/* control access */}
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Home />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/*" element={<Admin />} />
       </Route>
     </Routes>
   );

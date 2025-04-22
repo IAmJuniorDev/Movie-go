@@ -24,6 +24,12 @@ type MovieAdmin struct {
 	MainGenre string  `json:"main_genre" gorm:"type:varchar(25)"`
 }
 
+type MovieImage struct {
+	ImdbID string `json:"imdb_id" gorm:"primaryKey"`
+	ImageV []byte `json:"image_v" gorm:"type:LONGBLOB"`
+	ImageH []byte `json:"image_h" gorm:"type:LONGBLOB"`
+}
+
 func CreateMovies(ctx *fasthttp.RequestCtx) {
 	var payload models.MoviesPayload
 	if err := json.Unmarshal(ctx.PostBody(), &payload); err != nil {
@@ -57,11 +63,33 @@ func GetMovies(ctx *fasthttp.RequestCtx) {
 }
 
 func GetMoviesAdmin(ctx *fasthttp.RequestCtx) {
-	var movieAdmin []MovieAdmin
-	db.DB.Model(&models.Movie{}).
+	var movie []MovieAdmin
+	res := db.DB.Model(&models.Movie{}).
 		Select("imdb_id, title_en, title_th, year, rating, movie_type, main_genre").
-		Find(&movieAdmin)
-	response, _ := json.Marshal(movieAdmin)
+		Find(&movie)
+	if res.Error != nil {
+		ctx.SetStatusCode(fasthttp.StatusNotFound)
+		ctx.SetBody([]byte("Error fetching movies"))
+		return
+	}
+	response, _ := json.Marshal(movie)
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.SetBody(response)
+}
+
+func GetMovieImage(ctx *fasthttp.RequestCtx) {
+	imdbID := ctx.UserValue("id").(string)
+	var movie MovieImage
+	res := db.DB.Model(&models.Movie{}).
+		Select("imdb_id, image_v, image_h").
+		Where("imdb_id = ?", imdbID).
+		Find(&movie)
+	if res.Error != nil {
+		ctx.SetStatusCode(fasthttp.StatusNotFound)
+		ctx.SetBody([]byte("Error fetching movies"))
+		return
+	}
+	response, _ := json.Marshal(movie)
 	ctx.SetStatusCode(fasthttp.StatusOK)
 	ctx.SetBody(response)
 }

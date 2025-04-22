@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { userRequest } from "../../axiosCall.js";
-import TableLayout from "../../components/admins/tableLayout.jsx";
+import { userRequest } from "utils/axiosCall.js";
+import TableLayout from "components/admins/tableLayout.jsx";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
-import { setMovieAdmin } from "../../utils/movieAdminReducer.js";
+import { setMovieAdmin } from "libs/redux/movieAdminReducer.js";
 import {
   Box,
   Modal,
@@ -19,7 +19,7 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Text1, Text2, Text4 } from "../../components/admins/textService.jsx";
+import { Text1, Text2, Text4 } from "components/admins/textService.jsx";
 
 const style = {
   position: "absolute",
@@ -36,6 +36,7 @@ const style = {
 const MovieEdit = () => {
   const dispatch = useDispatch();
   const movieAdmin = useSelector((state) => state.movieAdmin);
+  
   const [headers, setHeaders] = useState([]);
   const [edit, setEdit] = useState(false);
   const [yearError, setYearError] = useState(false);
@@ -75,6 +76,14 @@ const MovieEdit = () => {
       });
     }
   };
+
+  const onDelete = (e)=>{
+    console.log(`delete ${e}`)
+  }
+
+  const onImageEdit = (e)=>{
+    console.log(`delete ${e}`)
+  }
 
   const getMovie = useCallback(async () => {
     try {
@@ -124,7 +133,7 @@ const MovieEdit = () => {
   return (
     <Box width={1440}>
       {movieAdmin && movieAdmin.length > 0 ? (
-        <TableLayout headers={headers} data={movieAdmin} onAction={openEdit} />
+        <TableLayout headers={headers} data={movieAdmin} onEdit={openEdit} onDelete={onDelete} onImageEdit={onImageEdit} />
       ) : null}
       <Modal
         open={edit}

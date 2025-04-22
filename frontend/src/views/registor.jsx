@@ -1,10 +1,10 @@
 import React from "react";
-import LoginAndRegistor from "../components/loginAndRegistor";
+import LoginAndRegistor from "components/loginAndRegistor";
 import { Button, Form, Input } from "antd";
 import Swal from "sweetalert2";
-import { publicRequest } from "../axiosCall";
+import { publicRequest } from "utils/axiosCall";
 import { useLocation } from "react-router-dom";
-import Layout from "../components/mainLayout";
+import Layout from "components/mainLayout";
 
 const Registor = () => {
   const [form] = Form.useForm();

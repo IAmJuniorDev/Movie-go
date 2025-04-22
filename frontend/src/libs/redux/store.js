@@ -1,6 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
-import userReducer  from './userReducer'
-import movieAdminReducer  from './movieAdminReducer'
+import userReducer from './userReducer';
+import movieAdminReducer from './movieAdminReducer';
+
+
 
 export default configureStore({
   reducer: {
