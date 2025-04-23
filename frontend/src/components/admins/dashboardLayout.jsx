@@ -10,6 +10,7 @@ import Grid from "@mui/material/Grid";
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import DashboardPage from "views/admins/dashboard";
 import MovieEdit from "views/admins/movie-edit";
+import theme from "utils/theme/theme";
 
 const NAVIGATION = [
   {
@@ -79,22 +80,6 @@ const NAVIGATION = [
   },
 ];
 
-const demoTheme = createTheme({
-  colorSchemes: { light: true, dark: true },
-  cssVariables: {
-    colorSchemeSelector: "class",
-  },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1440,
-    },
-  },
-});
-
 function useCustomRouter() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -107,13 +92,11 @@ function useCustomRouter() {
 
 export default function DashboardLayoutBasic() {
   const router = useCustomRouter();
-
   return (
-    <ThemeProvider theme={demoTheme}>
       <AppProvider
         navigation={NAVIGATION}
         router={router}
-        theme={demoTheme}
+        theme={theme}
       >
         <DashboardLayout>
           <PageContainer>
@@ -128,6 +111,5 @@ export default function DashboardLayoutBasic() {
           </PageContainer>
         </DashboardLayout>
       </AppProvider>
-    </ThemeProvider>
   );
 }

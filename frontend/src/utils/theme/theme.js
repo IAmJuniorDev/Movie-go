@@ -1,0 +1,12 @@
+import { createTheme } from '@mui/material/styles';
+import getMPTheme from './getMpTheme';
+
+const lightTheme = createTheme(getMPTheme('light'));
+const darkTheme = createTheme(getMPTheme('dark'));
+
+const theme = {
+  light: lightTheme,
+  dark: darkTheme,
+};
+
+export default theme;

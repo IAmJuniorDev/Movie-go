@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { userRequest } from "utils/axiosCall.js";
 import TableLayout from "components/admins/tableLayout.jsx";
 import Swal from "sweetalert2";
@@ -7,11 +7,6 @@ import { setMovieAdmin } from "libs/redux/movieAdminReducer.js";
 import {
   Box,
   Modal,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   TextField,
   Button,
 } from "@mui/material";
@@ -19,7 +14,8 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Text1, Text2, Text4 } from "components/admins/textService.jsx";
+import { Text } from "libs/text";
+import AddIcon from '@mui/icons-material/Add';
 
 const style = {
   position: "absolute",
@@ -85,6 +81,10 @@ const MovieEdit = () => {
     console.log(`delete ${e}`)
   }
 
+  const onNewImage = ()=>{
+    console.log("แฮร่~~~")
+  }
+
   const getMovie = useCallback(async () => {
     try {
       Swal.fire({
@@ -132,6 +132,26 @@ const MovieEdit = () => {
 
   return (
     <Box width={1440}>
+      <Box component="div" sx={{
+        width:"100%",
+        display:"flex",
+        justifyContent:"end",
+        margin:"0 0 10px 0"
+      }}>
+        <Button variant="contained"
+          sx={{
+            margin:"0 10px",
+            alignItems:"center",
+            justifyItems:"center"
+          }}
+          onClick={()=>{
+            onNewImage();
+          }}
+        >
+          <AddIcon/>
+          {"New Movie"}
+        </Button>
+      </Box>
       {movieAdmin && movieAdmin.length > 0 ? (
         <TableLayout headers={headers} data={movieAdmin} onEdit={openEdit} onDelete={onDelete} onImageEdit={onImageEdit} />
       ) : null}
@@ -142,14 +162,15 @@ const MovieEdit = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Text2
+          <Text
+            variant="h4"
             id="modal-modal-title"
             sx={{
               marginBottom: "16px",
             }}
           >
             Edit Movie
-          </Text2>
+          </Text>
           <Box
             component="form"
             onSubmit={handleSubmit}

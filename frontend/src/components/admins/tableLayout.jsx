@@ -7,13 +7,12 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  Button,
   TableSortLabel,
   TablePagination,
   useTheme,
 } from "@mui/material";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
-import NoteAddOutlinedIcon from "@mui/icons-material/NoteAddOutlined";
+// import NoteAddOutlinedIcon from "@mui/icons-material/NoteAddOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import { useState } from "react";
@@ -38,6 +37,7 @@ const TableLayout = ({
   onImageEdit = null,
 }) => {
   const theme = useTheme();
+  const color = theme.palette;
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState(
     headers && headers.length > 0 ? headers[0].toLowerCase() : ""
@@ -97,25 +97,22 @@ const TableLayout = ({
                       <Box
                         component="a"
                         onClick={() => onEdit(row)}
-                        sx={(theme) => ({
+                        sx={{
                           justifyContent: "center",
                           alignItems: "center",
                           cursor: "pointer",
                           display: "flex",
-                          color: theme.palette.grey[500],
+                          color: color.grey[500],
                           textDecoration: "none",
                           margin: "0 5px 0 0",
                           "&:hover": {
-                            color: theme.palette.primary.main,
+                            color: color.primary.main,
                           },
-                        })}
+                        }}
                       >
                         <ModeEditOutlinedIcon
                           sx={{
-                            color:
-                              theme.palette.mode === "dark"
-                                ? theme.palette.grey[500]
-                                : theme.palette.primary.light,
+                            color:color.primary.main
                           }}
                         />
                       </Box>
@@ -124,23 +121,23 @@ const TableLayout = ({
                       <Box
                         component="a"
                         onClick={() => onImageEdit(row.id)}
-                        sx={(theme) => ({
+                        sx={{
                           justifyContent: "center",
                           alignItems: "center",
                           cursor: "pointer",
                           display: "flex",
-                          color: theme.palette.grey[500],
+                          color: color.grey[500],
                           textDecoration: "none",
                           margin: "0 5px 0 0",
                           "&:hover": {
-                            color: theme.palette.primary.main,
+                            color: color.primary.main,
                           },
-                        })}
+                        }}
                       >
                         <ImageOutlinedIcon
-                          sx={(theme) => ({
-                            color: theme.palette.warning.main,
-                          })}
+                          sx={{
+                            color: color.warning.main,
+                          }}
                         />
                       </Box>
                     )}
@@ -148,23 +145,23 @@ const TableLayout = ({
                       <Box
                         component="a"
                         onClick={() => onDelete(row.id)}
-                        sx={(theme) => ({
+                        sx={{
                           justifyContent: "center",
                           alignItems: "center",
                           cursor: "pointer",
                           display: "flex",
-                          color: theme.palette.grey[500],
+                          color: color.grey[500],
                           textDecoration: "none",
                           margin: "0 5px 0 0",
                           "&:hover": {
-                            color: theme.palette.primary.main,
+                            color: color.primary.main,
                           },
-                        })}
+                        }}
                       >
                         <DeleteForeverOutlinedIcon
-                          sx={(theme) => ({
-                            color: theme.palette.error.light,
-                          })}
+                          sx={{
+                            color: color.error.light,
+                          }}
                         />
                       </Box>
                     )}
