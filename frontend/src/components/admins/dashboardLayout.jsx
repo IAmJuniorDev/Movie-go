@@ -1,16 +1,21 @@
 import * as React from "react";
-import { createTheme, styled } from "@mui/material/styles";
-import { ThemeProvider } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MovieEditIcon from "@mui/icons-material/MovieEdit";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import Grid from "@mui/material/Grid";
-import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import DashboardPage from "views/admins/dashboard";
 import MovieEdit from "views/admins/movie-edit";
 import theme from "utils/theme/theme";
+import { useTheme } from "@mui/material";
 
 const NAVIGATION = [
   {
@@ -91,25 +96,28 @@ function useCustomRouter() {
 }
 
 export default function DashboardLayoutBasic() {
+  const theme2 = useTheme();
+  const color = theme2.palette;
   const router = useCustomRouter();
   return (
-      <AppProvider
-        navigation={NAVIGATION}
-        router={router}
-        theme={theme}
-      >
-        <DashboardLayout>
-          <PageContainer>
-            <Grid container spacing={1}>
-              <Routes>
-                <Route path="/" element={<DashboardPage />} />
-                <Route path="/user" eleement={<DashboardPage/>} />
-                <Route path="/movie" element={<MovieEdit />} />
-                <Route path="*" element={<Navigate to="/" />} />
-              </Routes>
-            </Grid>
-          </PageContainer>
-        </DashboardLayout>
-      </AppProvider>
+    <AppProvider navigation={NAVIGATION} router={router} theme={theme}>
+      <DashboardLayout>
+        <PageContainer
+          className="testKub"
+          sx={{
+            backgroundColor: theme2 === "dark"?color.background.default:"",
+          }}
+        >
+          <Grid container spacing={1}>
+            <Routes>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/user" eleement={<DashboardPage />} />
+              <Route path="/movie" element={<MovieEdit />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </Grid>
+        </PageContainer>
+      </DashboardLayout>
+    </AppProvider>
   );
 }

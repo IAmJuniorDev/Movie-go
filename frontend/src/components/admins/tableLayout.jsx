@@ -43,7 +43,7 @@ const TableLayout = ({
     headers && headers.length > 0 ? headers[0].toLowerCase() : ""
   );
   const [page, setPage] = useState(0);
-  const rowsPerPage = 10;
+  const rowsPerPage = 9;
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -92,7 +92,7 @@ const TableLayout = ({
             return (
               <TableRow key={rowIndex}>
                 <TableCell align="center">
-                  <Box component="span" sx={{display:"flex"}}>
+                  <Box component="span" sx={{ display: "flex" }}>
                     {onEdit && (
                       <Box
                         component="a"
@@ -112,7 +112,7 @@ const TableLayout = ({
                       >
                         <ModeEditOutlinedIcon
                           sx={{
-                            color:color.primary.main
+                            color: color.primary.main,
                           }}
                         />
                       </Box>

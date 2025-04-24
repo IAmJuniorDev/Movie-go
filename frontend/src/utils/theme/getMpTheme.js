@@ -6,7 +6,6 @@ import { getDesignTokens } from './themePrimitives';
  * @returns {object} ThemeOptions
  */
 export default function getMPTheme(mode) {
-  console.log(mode)
   return {
     ...getDesignTokens(mode),
   };

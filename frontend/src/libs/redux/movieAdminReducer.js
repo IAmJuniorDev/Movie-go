@@ -20,10 +20,21 @@ export const movieAdminReducer = createSlice({
       }));
       return formattedData;
     },
+    updateMovieAdmin: (state, action) => {
+      const { imdb_id, ...rest } = action.payload;
+      const updatedMovie = {
+        id: imdb_id,
+        ...rest
+      };
+      const index = state.findIndex(movie => movie.id === updatedMovie.id);
+      if (index !== -1) {
+        state[index] = { ...state[index], ...updatedMovie };
+      }
+    }
     
   },
 })
 
-export const { setMovieAdmin } = movieAdminReducer.actions
+export const { setMovieAdmin,updateMovieAdmin } = movieAdminReducer.actions
 
 export default movieAdminReducer.reducer
