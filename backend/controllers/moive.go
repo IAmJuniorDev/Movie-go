@@ -115,14 +115,25 @@ func UpdateMovie(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte("Movie not found"))
 		return
 	}
-	var movie models.Movie
+	var movie MovieAdmin
 	if err := json.Unmarshal(ctx.PostBody(), &movie); err != nil {
 		ctx.SetStatusCode(400)
 		ctx.SetBody([]byte("Invalid JSON"))
 		return
 	}
-	movie.ID = old.ID
-	db.DB.Save(&movie)
+	if old.ImdbID != movie.ImdbID {
+		ctx.SetStatusCode(400)
+		ctx.SetBody([]byte("not match ImdbId"))
+		return
+	}
+	old.Year = movie.Year
+	old.Rating = movie.Rating
+	old.ImdbID = movie.ImdbID
+	old.TitleTH = movie.TitleTH
+	old.TitleEN = movie.TitleEN
+	old.MovieType = movie.MovieType
+	old.MainGenre = movie.MainGenre
+	db.DB.Save(&old)
 	response, _ := json.Marshal(movie)
 	ctx.SetStatusCode(200)
 	ctx.SetBody(response)

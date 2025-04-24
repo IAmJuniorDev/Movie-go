@@ -27,7 +27,6 @@ type Movie struct {
 	IsFamily      bool    `json:"is_family"`
 	IsHistory     bool    `json:"is_history"`
 	IsBiography   bool    `json:"is_biography"`
-	IsMusic       bool    `json:"is_music"`
 	IsDocumentary bool    `json:"is_documentary"`
 	IsWestern     bool    `json:"is_western"`
 	IsSport       bool    `json:"is_sport"`
