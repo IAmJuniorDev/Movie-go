@@ -43,18 +43,18 @@ export const green = {
   900: 'hsl(120, 87%, 6%)',
 };
 
-// export const orange = {
-//   50: 'hsl(45, 100%, 97%)',
-//   100: 'hsl(45, 92%, 90%)',
-//   200: 'hsl(45, 94%, 80%)',
-//   300: 'hsl(45, 90%, 65%)',
-//   400: 'hsl(45, 90%, 40%)',
-//   500: 'hsl(45, 90%, 35%)',
-//   600: 'hsl(45, 91%, 25%)',
-//   700: 'hsl(45, 94%, 20%)',
-//   800: 'hsl(45, 95%, 16%)',
-//   900: 'hsl(45, 93%, 12%)',
-// };
+export const yellow = {
+  50: 'hsl(45, 100%, 97%)',
+  100: 'hsl(45, 92%, 90%)',
+  200: 'hsl(45, 94%, 80%)',
+  300: 'hsl(45, 90%, 65%)',
+  400: 'hsl(45, 90%, 40%)',
+  500: 'hsl(45, 90%, 35%)',
+  600: 'hsl(45, 91%, 25%)',
+  700: 'hsl(45, 94%, 20%)',
+  800: 'hsl(45, 95%, 16%)',
+  900: 'hsl(45, 93%, 12%)',
+};
 
 export const orange = {
   50: 'hsl(30, 100%, 97%)',
@@ -116,6 +116,16 @@ export const getDesignTokens = (mode) => {
           light: brand[500],
           main: brand[700],
           dark: brand[900],
+        }),
+      },
+      lemon:{
+        light: yellow[300],
+        main: yellow[400],
+        dark: yellow[800],
+        ...(mode === 'dark' && {
+          light: yellow[400],
+          main: yellow[500],
+          dark: yellow[700],
         }),
       },
       warning: {
