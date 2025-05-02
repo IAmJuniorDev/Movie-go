@@ -43,6 +43,19 @@ func CreateMovies(ctx *fasthttp.RequestCtx) {
 	ctx.SetBody(response)
 }
 
+func CreateMoviesAdmin(ctx *fasthttp.RequestCtx) {
+	var payload models.Movie
+	if err := json.Unmarshal(ctx.PostBody(), &payload); err != nil {
+		ctx.SetStatusCode(400)
+		ctx.SetBody([]byte("Invalid JSON"))
+		return
+	}
+	db.DB.Create(&payload)
+	ctx.SetStatusCode(201)
+	response, _ := json.Marshal(payload)
+	ctx.SetBody(response)
+}
+
 func GetMovies(ctx *fasthttp.RequestCtx) {
 	var movies []models.Movie
 	yearParam := string(ctx.URI().QueryArgs().Peek("year"))
