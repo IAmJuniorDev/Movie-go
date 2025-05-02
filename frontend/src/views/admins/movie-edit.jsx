@@ -22,6 +22,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Text } from "libs/text";
 import AddIcon from "@mui/icons-material/Add";
+import { MuiFileInput } from "mui-file-input";
 
 const MovieEdit = () => {
   const theme = useTheme();
@@ -71,6 +72,8 @@ const MovieEdit = () => {
     is_sport: false,
     is_musical: false,
     video: "",
+    image_h: "",
+    image_v: "",
   });
 
   const openEdit = (e) => {
@@ -116,16 +119,16 @@ const MovieEdit = () => {
     }));
   };
 
-  const generateUniqueMovieId = () => {
+  const generateUniqueMovieId = useCallback(() => {
     const existingIds = new Set(movieAdmin.map((movie) => movie.id));
     let newId;
     do {
-      const randomNum = Math.floor(Math.random() * 10000000); // 0 - 9999999
-      const padded = String(randomNum).padStart(7, "0"); // ensures 7 digits
+      const randomNum = Math.floor(Math.random() * 10000000);
+      const padded = String(randomNum).padStart(7, "0");
       newId = `tt${padded}`;
     } while (existingIds.has(newId));
     return newId;
-  };
+  }, [movieAdmin]);
 
   const handleSubmitEditMovie = async (e) => {
     e.preventDefault();
@@ -164,9 +167,54 @@ const MovieEdit = () => {
     }
   };
 
-  const handleSubmitNewMovie = (e) => {
+  const convertFileToBlob = (file,name)=>{
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewMovieForm((prevState) => ({
+          ...prevState,
+          [name]: reader.result, 
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  const handleSubmitNewMovie = async (e) => {
     e.preventDefault();
-    console.log(newMovieForm);
+    try {
+      Swal.fire({
+        title: "Loading...",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      convertFileToBlob(newMovieForm.image_h,"image_h");
+      console.log(newMovieForm.image_h);
+      return;
+      const res = await userRequest.post(`/movies/admin`, newMovieForm);
+      if (res.status === 200) {
+        dispatch(updateMovieAdmin(res.data));
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: `The data have been changed!!!`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        setEdit(false);
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `${err}`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      console.log(err);
+    }
   };
 
   const genreKeys = Object.keys(newMovieForm).filter((key) =>
@@ -237,7 +285,7 @@ const MovieEdit = () => {
         imdb_id: newId,
       }));
     }
-  }, [newMovie]);
+  }, [newMovie, generateUniqueMovieId]);
 
   const style = {
     position: "absolute",
@@ -517,6 +565,28 @@ const MovieEdit = () => {
                 value={newMovieForm.video}
                 onChange={handleNewMovieChange}
               />
+              <MuiFileInput
+                required
+                label="Image Horizontle"
+                value={newMovieForm.image_h}
+                onChange={(file) =>
+                  setNewMovieForm((prev) => ({
+                    ...prev,
+                    image_h: file,
+                  }))
+                }
+              />
+              <MuiFileInput
+                required
+                label="Image Verticle"
+                value={newMovieForm.image_v}
+                onChange={(file) =>
+                  setNewMovieForm((prev) => ({
+                    ...prev,
+                    image_v: file,
+                  }))
+                }
+              />
             </Box>
             <Text variant="subtitle1">Movie-type</Text>
             <Box>
@@ -531,6 +601,7 @@ const MovieEdit = () => {
                 label="Select All type"
                 sx={{
                   display: "block",
+                  width: "fit-content",
                   margin: "0 0 0 15px",
                 }}
               />
