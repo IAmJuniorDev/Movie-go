@@ -42,7 +42,10 @@ const MovieEdit = () => {
     movie_type: "",
     main_genre: "",
   });
+  const [imageH, setImageH] = useState();
+  const [imageV, setImageV] = useState();
   const [newMovieForm, setNewMovieForm] = useState({
+    id: null,
     imdb_id: "",
     title_en: "",
     title_th: "",
@@ -72,8 +75,8 @@ const MovieEdit = () => {
     is_sport: false,
     is_musical: false,
     video: "",
-    image_h: "",
-    image_v: "",
+    image_h: null,
+    image_v: null,
   });
 
   const openEdit = (e) => {
@@ -167,18 +170,21 @@ const MovieEdit = () => {
     }
   };
 
-  const convertFileToBlob = (file,name)=>{
-    if (file) {
+  const convertFileToBlob = (file, name) => {
+    return new Promise((resolve, reject) => {
+      if (!file) return resolve();
       const reader = new FileReader();
       reader.onloadend = () => {
         setNewMovieForm((prevState) => ({
           ...prevState,
-          [name]: reader.result, 
+          [name]: reader.result.toString(),
         }));
+        resolve();
       };
+      reader.onerror = (err) => reject(err);
       reader.readAsDataURL(file);
-    }
-  }
+    });
+  };
 
   const handleSubmitNewMovie = async (e) => {
     e.preventDefault();
@@ -190,10 +196,10 @@ const MovieEdit = () => {
           Swal.showLoading();
         },
       });
-      convertFileToBlob(newMovieForm.image_h,"image_h");
-      console.log(newMovieForm.image_h);
-      return;
-      const res = await userRequest.post(`/movies/admin`, newMovieForm);
+      var mForm = new FormData();
+      mForm = newMovieForm;
+      console.log(mForm);
+      const res = await userRequest.post(`/movies/admin`, mForm);
       if (res.status === 200) {
         dispatch(updateMovieAdmin(res.data));
         Swal.fire({
@@ -542,7 +548,12 @@ const MovieEdit = () => {
                 label="Rating"
                 type="number"
                 value={newMovieForm.rating === null ? "" : newMovieForm.rating}
-                onChange={handleNewMovieChange}
+                onChange={(e) =>
+                  setNewMovieForm((prev) => ({
+                    ...prev,
+                    rating: parseFloat(e.target.value) || 0,
+                  }))
+                }
               />
               <TextField
                 required
@@ -569,24 +580,32 @@ const MovieEdit = () => {
                 required
                 label="Image Horizontle"
                 value={newMovieForm.image_h}
-                onChange={(file) =>
-                  setNewMovieForm((prev) => ({
-                    ...prev,
-                    image_h: file,
-                  }))
-                }
+                onChange={(e)=>setNewMovieForm((prev) => ({
+                  ...prev,
+                  image_h: e,
+                }))}
               />
               <MuiFileInput
                 required
                 label="Image Verticle"
                 value={newMovieForm.image_v}
-                onChange={(file) =>
-                  setNewMovieForm((prev) => ({
-                    ...prev,
-                    image_v: file,
-                  }))
-                }
+                onChange={(e)=>setNewMovieForm((prev) => ({
+                  ...prev,
+                  image_v: e,
+                }))}
               />
+              {/* <MuiFileInput
+                required
+                label="Image Horizontle"
+                value={imageH}
+                onChange={(e) => setImageH(e)}
+              />
+              <MuiFileInput
+                required
+                label="Image Verticle"
+                value={imageV}
+                onChange={(e) => setImageV(e)}
+              /> */}
             </Box>
             <Text variant="subtitle1">Movie-type</Text>
             <Box>
