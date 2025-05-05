@@ -2,7 +2,7 @@ package models
 
 // Movie Model
 type Movie struct {
-	ID            int64   `json:"id" gorm:"primaryKey"`
+	ID            int64   `json:"id" gorm:"primaryKey;autoIncrement"`
 	ImdbID        string  `json:"imdbID" gorm:"primaryKey"`
 	TitleEN       string  `json:"title_en" gorm:"type:varchar(100)"`
 	TitleTH       string  `json:"title_th" gorm:"type:varchar(150)"`
