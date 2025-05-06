@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"io"
 	"strconv"
 
 	"github.com/IAmJuniorDev/API-GO/db"
@@ -44,15 +45,82 @@ func CreateMovies(ctx *fasthttp.RequestCtx) {
 }
 
 func CreateMoviesAdmin(ctx *fasthttp.RequestCtx) {
-	var payload models.Movie
-	if err := json.Unmarshal(ctx.PostBody(), &payload); err != nil {
+	form, err := ctx.MultipartForm()
+	if err != nil {
 		ctx.SetStatusCode(400)
-		ctx.SetBody([]byte("Invalid JSON"))
+		ctx.SetBody([]byte("Invalid multipart/form-data"))
 		return
 	}
-	db.DB.Create(&payload)
+	imdbID := string(form.Value["imdb_id"][0])
+	titleEN := string(form.Value["title_en"][0])
+	titleTH := string(form.Value["title_th"][0])
+	year, _ := strconv.Atoi(string(form.Value["year"][0]))
+	rating, _ := strconv.ParseFloat(string(form.Value["rating"][0]), 64)
+	movieType := string(form.Value["movie_type"][0])
+	mainGenre := string(form.Value["main_genre"][0])
+	video := string(form.Value["video"][0])
+	parseBool := func(field string) bool {
+		if val, ok := form.Value[field]; ok && len(val) > 0 {
+			b, _ := strconv.ParseBool(val[0])
+			return b
+		}
+		return false
+	}
+	var imageVBytes, imageHBytes []byte
+	if files := form.File["image_v"]; len(files) > 0 {
+		file, _ := files[0].Open()
+		defer file.Close()
+		imageVBytes, _ = io.ReadAll(file)
+	}
+	if files := form.File["image_h"]; len(files) > 0 {
+		file, _ := files[0].Open()
+		defer file.Close()
+		imageHBytes, _ = io.ReadAll(file)
+	}
+	movie := models.Movie{
+		ImdbID:        imdbID,
+		TitleEN:       titleEN,
+		TitleTH:       titleTH,
+		Year:          year,
+		Rating:        rating,
+		MovieType:     movieType,
+		MainGenre:     mainGenre,
+		Video:         video,
+		ImageV:        imageVBytes,
+		ImageH:        imageHBytes,
+		IsSuperhero:   parseBool("is_superhero"),
+		IsFiction:     parseBool("is_fiction"),
+		IsAction:      parseBool("is_action"),
+		IsAnimated:    parseBool("is_animated"),
+		IsThriller:    parseBool("is_thriller"),
+		IsDrama:       parseBool("is_drama"),
+		IsComedy:      parseBool("is_comedy"),
+		IsHorror:      parseBool("is_horror"),
+		IsMystery:     parseBool("is_mystery"),
+		IsCrime:       parseBool("is_crime"),
+		IsAdventure:   parseBool("is_adventure"),
+		IsWar:         parseBool("is_war"),
+		IsRomance:     parseBool("is_romance"),
+		IsFantasy:     parseBool("is_fantasy"),
+		IsFamily:      parseBool("is_family"),
+		IsHistory:     parseBool("is_history"),
+		IsBiography:   parseBool("is_biography"),
+		IsDocumentary: parseBool("is_documentary"),
+		IsWestern:     parseBool("is_western"),
+		IsSport:       parseBool("is_sport"),
+		IsMusical:     parseBool("is_musical"),
+	}
+	var movieAdmin MovieAdmin
+	movieAdmin.ImdbID = movie.ImdbID
+	movieAdmin.TitleEN = movie.TitleEN
+	movieAdmin.TitleTH = movie.TitleTH
+	movieAdmin.Year = movie.Year
+	movieAdmin.Rating = movie.Rating
+	movieAdmin.MainGenre = movie.MainGenre
+	movieAdmin.MovieType = movie.MovieType
+	db.DB.Create(&movie)
+	response, _ := json.Marshal(movieAdmin)
 	ctx.SetStatusCode(201)
-	response, _ := json.Marshal(payload)
 	ctx.SetBody(response)
 }
 
@@ -228,6 +296,7 @@ func DeleteMovie(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	db.DB.Delete(&movie)
+	response, _ := json.Marshal(movie)
 	ctx.SetStatusCode(200)
-	ctx.SetBody([]byte("Movie deleted"))
+	ctx.SetBody(response)
 }
