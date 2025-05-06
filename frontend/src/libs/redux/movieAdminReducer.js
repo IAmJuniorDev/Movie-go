@@ -29,12 +29,16 @@ export const movieAdminReducer = createSlice({
       const index = state.findIndex(movie => movie.id === updatedMovie.id);
       if (index !== -1) {
         state[index] = { ...state[index], ...updatedMovie };
+      }else {
+        state.push(updatedMovie); 
       }
-    }
-    
+    },
+    deleteMovieAdmin: (state, action) => {
+      return state.filter(movie => movie.id !== action.payload);
+    },
   },
 })
 
-export const { setMovieAdmin,updateMovieAdmin } = movieAdminReducer.actions
+export const { setMovieAdmin,updateMovieAdmin,deleteMovieAdmin } = movieAdminReducer.actions
 
 export default movieAdminReducer.reducer

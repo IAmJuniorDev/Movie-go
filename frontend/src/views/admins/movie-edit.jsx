@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setMovieAdmin,
   updateMovieAdmin,
+  deleteMovieAdmin,
 } from "libs/redux/movieAdminReducer.js";
 import {
   Box,
@@ -23,6 +24,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Text } from "libs/text";
 import AddIcon from "@mui/icons-material/Add";
 import { MuiFileInput } from "mui-file-input";
+import { confirmAction, onLoading, onSuccess, onError } from "utils/sweetAlert";
+import { setMovieImage } from "libs/redux/movieImageReducer";
 
 const MovieEdit = () => {
   const theme = useTheme();
@@ -32,6 +35,7 @@ const MovieEdit = () => {
   const [headers, setHeaders] = useState([]);
   const [edit, setEdit] = useState(false);
   const [newMovie, setNewMovie] = useState(false);
+  const [image, setImage] = useState(false);
   const [yearError, setYearError] = useState(false);
   const [editForm, setEditForm] = useState({
     imdb_id: "",
@@ -42,8 +46,6 @@ const MovieEdit = () => {
     movie_type: "",
     main_genre: "",
   });
-  const [imageH, setImageH] = useState();
-  const [imageV, setImageV] = useState();
   const [newMovieForm, setNewMovieForm] = useState({
     id: null,
     imdb_id: "",
@@ -79,6 +81,12 @@ const MovieEdit = () => {
     image_v: null,
   });
 
+  const genreKeys = Object.keys(newMovieForm).filter((key) =>
+    key.startsWith("is_")
+  );
+  const allChecked = genreKeys.every((key) => newMovieForm[key]);
+  const someChecked = genreKeys.some((key) => newMovieForm[key]);
+
   const openEdit = (e) => {
     setEdit(!edit);
     if (editForm.imdb_id === null || editForm.imdb_id === "") {
@@ -94,12 +102,21 @@ const MovieEdit = () => {
     }
   };
 
-  const onDelete = (e) => {
-    console.log(`delete ${e}`);
-  };
-
-  const onImageEdit = (e) => {
-    console.log(`delete ${e}`);
+  const onImageEdit = async(e) => {
+    const id = e;
+    try{
+      onLoading();
+      const res = await userRequest.get(`movies/admin/${id}`)
+      if(res.status===200){
+        dispatch(setMovieImage(res.data))
+        onSuccess({});
+      }
+    }catch(err){
+      onError({
+        text:`${err}`
+      })
+    }
+    setImage(!image);
   };
 
   const onNewMovie = () => {
@@ -122,113 +139,85 @@ const MovieEdit = () => {
     }));
   };
 
-  const generateUniqueMovieId = useCallback(() => {
-    const existingIds = new Set(movieAdmin.map((movie) => movie.id));
-    let newId;
-    do {
-      const randomNum = Math.floor(Math.random() * 10000000);
-      const padded = String(randomNum).padStart(7, "0");
-      newId = `tt${padded}`;
-    } while (existingIds.has(newId));
-    return newId;
-  }, [movieAdmin]);
-
-  const handleSubmitEditMovie = async (e) => {
-    e.preventDefault();
-    try {
-      Swal.fire({
-        title: "Loading...",
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-      const res = await userRequest.put(
-        `/movies/${editForm.imdb_id}`,
-        editForm
-      );
-      if (res.status === 200) {
-        dispatch(updateMovieAdmin(res.data));
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: `The data have been changed!!!`,
-          timer: 2000,
-          showConfirmButton: false,
+  const onDelete = async (e) => {
+    var id = e.toString();
+    const confirm = await confirmAction({
+      title: "Delete this movie?",
+      text: "You won't be able to recover it!",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (confirm.isConfirmed) {
+      try {
+        onLoading();
+        const res = await userRequest.delete(`/movies/${id}`);
+        if (res.status === 200) {
+          dispatch(deleteMovieAdmin(id));
+          onSuccess({});
+        }
+      } catch (err) {
+        onError({
+          text: `${err}`,
         });
-        setEdit(false);
       }
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `${err}`,
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      console.log(err);
     }
   };
 
-  const convertFileToBlob = (file, name) => {
-    return new Promise((resolve, reject) => {
-      if (!file) return resolve();
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewMovieForm((prevState) => ({
-          ...prevState,
-          [name]: reader.result.toString(),
-        }));
-        resolve();
-      };
-      reader.onerror = (err) => reject(err);
-      reader.readAsDataURL(file);
+  const handleSubmitEditMovie = async (e) => {
+    e.preventDefault();
+    const confirm = await confirmAction({
+      title: "Change this movie?",
+      text: "You won't be able to recover it!",
+      confirmButtonText: "Yes, Change it!",
     });
+    if (confirm.isConfirmed) {
+      try {
+        onLoading();
+        const res = await userRequest.put(
+          `/movies/${editForm.imdb_id}`,
+          editForm
+        );
+        if (res.status === 200) {
+          dispatch(updateMovieAdmin(res.data));
+          onSuccess({});
+          setEdit(false);
+        }
+      } catch (err) {
+        onError({
+          text: `${err}`,
+        });
+      }
+    }
   };
 
   const handleSubmitNewMovie = async (e) => {
     e.preventDefault();
-    try {
-      Swal.fire({
-        title: "Loading...",
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-      var mForm = new FormData();
-      mForm = newMovieForm;
-      console.log(mForm);
-      const res = await userRequest.post(`/movies/admin`, mForm);
-      if (res.status === 200) {
-        dispatch(updateMovieAdmin(res.data));
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: `The data have been changed!!!`,
-          timer: 2000,
-          showConfirmButton: false,
+    const confirm = await confirmAction({
+      title: "Add New movie?",
+      text: "The new movie will be create!",
+      confirmButtonText: "Yes, Create it!",
+    });
+    if (confirm.isConfirmed) {
+      try {
+        onLoading();
+        var mForm = new FormData();
+        mForm = newMovieForm;
+        const res = await userRequest.post(`/movies/admin`, mForm, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
-        setEdit(false);
+        if (res.status === 201) {
+          dispatch(updateMovieAdmin(res.data));
+          onSuccess({});
+          setNewMovie(false);
+        }
+      } catch (err) {
+        onError({
+          text: `${err}`,
+        });
       }
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `${err}`,
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      console.log(err);
     }
   };
-
-  const genreKeys = Object.keys(newMovieForm).filter((key) =>
-    key.startsWith("is_")
-  );
-
-  const allChecked = genreKeys.every((key) => newMovieForm[key]);
-  const someChecked = genreKeys.some((key) => newMovieForm[key]);
 
   const toggleAllGenres = (checked) => {
     const updated = {};
@@ -240,36 +229,30 @@ const MovieEdit = () => {
 
   const getMovie = useCallback(async () => {
     try {
-      Swal.fire({
-        title: "Loading...",
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
+      onLoading();
       const res = await userRequest.get("/movies/admin");
       if (res.status === 200) {
         dispatch(setMovieAdmin(res.data));
         setHeaders(Object.keys(res.data[0] || {}));
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: `The data from movie is already retrieved`,
-          timer: 2000,
-          showConfirmButton: false,
-        });
+        onSuccess({});
       }
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `${err}`,
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      console.log(err);
+      onError({
+        text:`${err}`
+      })
     }
   }, [dispatch]);
+
+  const generateUniqueMovieId = useCallback(() => {
+    const existingIds = new Set(movieAdmin.map((movie) => movie.id));
+    let newId;
+    do {
+      const randomNum = Math.floor(Math.random() * 10000000);
+      const padded = String(randomNum).padStart(7, "0");
+      newId = `tt${padded}`;
+    } while (existingIds.has(newId));
+    return newId;
+  }, [movieAdmin]);
 
   useEffect(() => {
     if (
@@ -580,19 +563,23 @@ const MovieEdit = () => {
                 required
                 label="Image Horizontle"
                 value={newMovieForm.image_h}
-                onChange={(e)=>setNewMovieForm((prev) => ({
-                  ...prev,
-                  image_h: e,
-                }))}
+                onChange={(e) =>
+                  setNewMovieForm((prev) => ({
+                    ...prev,
+                    image_h: e,
+                  }))
+                }
               />
               <MuiFileInput
                 required
                 label="Image Verticle"
                 value={newMovieForm.image_v}
-                onChange={(e)=>setNewMovieForm((prev) => ({
-                  ...prev,
-                  image_v: e,
-                }))}
+                onChange={(e) =>
+                  setNewMovieForm((prev) => ({
+                    ...prev,
+                    image_v: e,
+                  }))
+                }
               />
               {/* <MuiFileInput
                 required
@@ -640,6 +627,59 @@ const MovieEdit = () => {
                     .replace(/\b\w/g, (c) => c.toUpperCase())}
                 />
               ))}
+            </Box>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                width: "fit-content",
+                alignSelf: "end",
+              }}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+      <Modal
+        open={image}
+        onClose={onImageEdit}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        sx={{
+          zIndex: 999,
+        }}
+      >
+        <Box sx={style}>
+          <Text
+            variant="h4"
+            id="modal-modal-title"
+            sx={{
+              marginBottom: "16px",
+            }}
+          >
+            Image Edit
+          </Text>
+          <Box
+            component="form"
+            onSubmit={handleSubmitNewMovie}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+            }}
+          >
+            <Box
+              sx={{
+                display: { xs: "flex", md: "flex", lg: "grid" },
+                gridTemplateColumns: { lg: "1fr 1fr" },
+                flexDirection: { xs: "column", md: "column" },
+                gap: { xs: 1, sm: 2 },
+                width: "100%",
+                marginBottom: "16px",
+              }}
+            >
+
             </Box>
             <Button
               type="submit"
