@@ -31,7 +31,7 @@ const MovieEdit = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const movieAdmin = useSelector((state) => state.movieAdmin);
-
+  const movieImage = useSelector((state) => state.movieImage);
   const [headers, setHeaders] = useState([]);
   const [edit, setEdit] = useState(false);
   const [newMovie, setNewMovie] = useState(false);
@@ -80,6 +80,11 @@ const MovieEdit = () => {
     image_h: null,
     image_v: null,
   });
+  const [editImage, setEditImage] = useState({
+    id: "",
+    image_h: "",
+    image_v: "",
+  });
 
   const genreKeys = Object.keys(newMovieForm).filter((key) =>
     key.startsWith("is_")
@@ -102,19 +107,32 @@ const MovieEdit = () => {
     }
   };
 
-  const onImageEdit = async(e) => {
+  const onImageEdit = async (e) => {
     const id = e;
-    try{
+    try {
       onLoading();
-      const res = await userRequest.get(`movies/admin/${id}`)
-      if(res.status===200){
-        dispatch(setMovieImage(res.data))
-        onSuccess({});
+      const res = await userRequest.get(`movies/admin/${id}`);
+      if (res.status === 200) {
+        const image_h = formatBase64Image(res.data.image_h);
+        const image_v = formatBase64Image(res.data.image_v);
+        dispatch(
+          setMovieImage({
+            imdb_id: res.data.imdb_id,
+            image_v: image_v,
+            image_h: image_h,
+          })
+        );
+        setEditImage({
+          id: res.data.imdb_id,
+          image_h,
+          image_v,
+        });
+        Swal.close();
       }
-    }catch(err){
+    } catch (err) {
       onError({
-        text:`${err}`
-      })
+        text: `${err}`,
+      });
     }
     setImage(!image);
   };
@@ -219,6 +237,15 @@ const MovieEdit = () => {
     }
   };
 
+  const formatBase64Image = (base64) => {
+    if (!base64) return "";
+    if (base64.startsWith("/9j/")) return `data:image/jpeg;base64,${base64}`;
+    if (base64.startsWith("iVBORw0KGgo"))
+      return `data:image/png;base64,${base64}`;
+    if (base64.startsWith("R0lGOD")) return `data:image/gif;base64,${base64}`;
+    return `data:image/*;base64,${base64}`; // Fallback
+  };
+
   const toggleAllGenres = (checked) => {
     const updated = {};
     genreKeys.forEach((key) => {
@@ -238,8 +265,8 @@ const MovieEdit = () => {
       }
     } catch (err) {
       onError({
-        text:`${err}`
-      })
+        text: `${err}`,
+      });
     }
   }, [dispatch]);
 
@@ -679,7 +706,22 @@ const MovieEdit = () => {
                 marginBottom: "16px",
               }}
             >
-
+              <Box>
+                <img
+                  alt=""
+                  src={editImage?.image_v || ""}
+                  loading="lazy"
+                  style={{ width: "180px" }}
+                />
+              </Box>
+              <Box>
+                <img
+                  alt=""
+                  src={editImage?.image_h || ""}
+                  loading="lazy"
+                  style={{ width: "300px" }}
+                />
+              </Box>
             </Box>
             <Button
               type="submit"

@@ -2,7 +2,11 @@ import { createSlice } from '@reduxjs/toolkit'
 
 export const movieImageReducer = createSlice({
   name: 'movieImage',
-  initialState: [],
+  initialState: [{
+    id:"",
+    image_h:"",
+    image_v:""
+  }],
   reducers: {
     setMovieImage: (state, action) => {
       const newMovie = {
