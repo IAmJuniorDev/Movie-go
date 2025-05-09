@@ -109,32 +109,43 @@ const MovieEdit = () => {
 
   const onImageEdit = async (e) => {
     const id = e;
-    try {
-      onLoading();
-      const res = await userRequest.get(`movies/admin/${id}`);
-      if (res.status === 200) {
-        const image_h = formatBase64Image(res.data.image_h);
-        const image_v = formatBase64Image(res.data.image_v);
-        dispatch(
-          setMovieImage({
-            imdb_id: res.data.imdb_id,
-            image_v: image_v,
-            image_h: image_h,
-          })
-        );
-        setEditImage({
-          id: res.data.imdb_id,
-          image_h,
-          image_v,
-        });
-        Swal.close();
-      }
-    } catch (err) {
-      onError({
-        text: `${err}`,
+    var index = movieImage.findIndex((item) => item.id === id);
+    if (index !== -1) {
+      const { image_h, image_v } = movieImage[index];
+      setEditImage({
+        id,
+        image_h,
+        image_v,
       });
+      setImage(!image);
+    } else {
+      try {
+        onLoading();
+        const res = await userRequest.get(`movies/admin/${id}`);
+        if (res.status === 200) {
+          const image_h = formatBase64Image(res.data.image_h);
+          const image_v = formatBase64Image(res.data.image_v);
+          dispatch(
+            setMovieImage({
+              imdb_id: res.data.imdb_id,
+              image_v: image_v,
+              image_h: image_h,
+            })
+          );
+          setEditImage({
+            id: res.data.imdb_id,
+            image_h,
+            image_v,
+          });
+          Swal.close();
+        }
+      } catch (err) {
+        onError({
+          text: `${err}`,
+        });
+      }
+      setImage(!image);
     }
-    setImage(!image);
   };
 
   const onNewMovie = () => {
@@ -706,21 +717,39 @@ const MovieEdit = () => {
                 marginBottom: "16px",
               }}
             >
-              <Box>
+              <Box
+                sx={{
+                  width:"100%",
+                  display:"grid",
+                  justifyContent:"center"
+                }}
+              >
                 <img
                   alt=""
                   src={editImage?.image_v || ""}
                   loading="lazy"
                   style={{ width: "180px" }}
                 />
+                <Box>
+                  
+                </Box>
               </Box>
-              <Box>
+              <Box
+                sx={{
+                  width:"100%",
+                  display:"grid",
+                  justifyContent:"center"
+                }}
+              >
                 <img
                   alt=""
                   src={editImage?.image_h || ""}
                   loading="lazy"
                   style={{ width: "300px" }}
                 />
+                <Box>
+
+                </Box>
               </Box>
             </Box>
             <Button
