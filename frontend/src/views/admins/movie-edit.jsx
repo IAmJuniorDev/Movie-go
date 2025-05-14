@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { userRequest } from "utils/axiosCall.js";
 import TableLayout from "components/admins/tableLayout.jsx";
 import Swal from "sweetalert2";
@@ -23,6 +23,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Text } from "libs/text";
 import AddIcon from "@mui/icons-material/Add";
+import HeightIcon from "@mui/icons-material/Height";
+import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { MuiFileInput } from "mui-file-input";
 import { confirmAction, onLoading, onSuccess, onError } from "utils/sweetAlert";
 import { setMovieImage } from "libs/redux/movieImageReducer";
@@ -32,6 +34,9 @@ const MovieEdit = () => {
   const dispatch = useDispatch();
   const movieAdmin = useSelector((state) => state.movieAdmin);
   const movieImage = useSelector((state) => state.movieImage);
+  const imageHRef = useRef(null);
+  const imageVRef = useRef(null);
+
   const [headers, setHeaders] = useState([]);
   const [edit, setEdit] = useState(false);
   const [newMovie, setNewMovie] = useState(false);
@@ -248,6 +253,50 @@ const MovieEdit = () => {
     }
   };
 
+  const handleSubmitMovieImage = async (e) => {
+    e.preventDefault();
+    const confirm = await confirmAction({
+      title: "Change Image???",
+      text: "The new Image will be replace!",
+      confirmButtonText: "Yes, Create it!",
+    });
+    if (confirm.isConfirmed) {
+      try {
+        onLoading();
+        const payload = {
+          image_v: editImage.image_v,
+          image_h: editImage.image_h,
+        };
+        const res = await userRequest.put(
+          `movies/addpic/${editImage.id}`,
+          payload
+        );
+        if (res.status === 200) {
+          const image_h = formatBase64Image(res.data.image_h);
+          const image_v = formatBase64Image(res.data.image_v);
+          dispatch(
+            setMovieImage({
+              imdb_id: res.data.imdb_id,
+              image_v: image_v,
+              image_h: image_h,
+            })
+          );
+          setEditImage({
+            id: null,
+            image_h: null,
+            image_v: null,
+          });
+          setImage(false);
+          onSuccess({});
+        }
+      } catch (err) {
+        onError({
+          text: `${err}`,
+        });
+      }
+    }
+  };
+
   const formatBase64Image = (base64) => {
     if (!base64) return "";
     if (base64.startsWith("/9j/")) return `data:image/jpeg;base64,${base64}`;
@@ -263,6 +312,25 @@ const MovieEdit = () => {
       updated[key] = checked;
     });
     setNewMovieForm((prev) => ({ ...prev, ...updated }));
+  };
+
+  const handleFileChange = async (file, image) => {
+    if (!file) return;
+    const toBase64 = (file) =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+      });
+    const dataUrl = await toBase64(file);
+    // const base64 = dataUrl.split(",")[1];
+    // const formattedImage = formatBase64Image(base64);
+    setEditImage({ ...editImage, [image]: dataUrl });
+  };
+
+  const handleImageRef = (ref) => {
+    ref.current?.click();
   };
 
   const getMovie = useCallback(async () => {
@@ -700,7 +768,7 @@ const MovieEdit = () => {
           </Text>
           <Box
             component="form"
-            onSubmit={handleSubmitNewMovie}
+            onSubmit={handleSubmitMovieImage}
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -719,36 +787,92 @@ const MovieEdit = () => {
             >
               <Box
                 sx={{
-                  width:"100%",
-                  display:"grid",
-                  justifyContent:"center"
+                  width: "100%",
+                  display: "grid",
+                  justifyContent: "center",
+                  alignContent: "start",
                 }}
               >
+                <Box
+                  marginBottom="10px"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <HeightIcon color="secondary" sx={{ margin: "0 5px" }} />
+                  <Text variant="subtitle1">Image Vertical</Text>
+                </Box>
                 <img
                   alt=""
                   src={editImage?.image_v || ""}
                   loading="lazy"
-                  style={{ width: "180px" }}
+                  style={{
+                    width: "180px",
+                    marginBottom: "10px",
+                  }}
                 />
                 <Box>
-                  
+                  <MuiFileInput
+                    value={editImage.image_v}
+                    inputRef={imageVRef}
+                    sx={{
+                      display: "none",
+                    }}
+                    onChange={(file) => handleFileChange(file, "image_v")}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => handleImageRef(imageVRef)}
+                  >
+                    Change image_v
+                  </Button>
                 </Box>
               </Box>
               <Box
                 sx={{
-                  width:"100%",
-                  display:"grid",
-                  justifyContent:"center"
+                  width: "100%",
+                  display: "grid",
+                  justifyContent: "center",
+                  alignContent: "start",
                 }}
               >
+                <Box
+                  marginBottom="10px"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <SyncAltIcon color="secondary" sx={{ margin: "0 5px" }} />
+                  <Text variant="subtitle1">Image Horizontal</Text>
+                </Box>
                 <img
                   alt=""
                   src={editImage?.image_h || ""}
                   loading="lazy"
-                  style={{ width: "300px" }}
+                  style={{
+                    width: "300px",
+                    marginBottom: "10px",
+                  }}
                 />
                 <Box>
-
+                  <MuiFileInput
+                    value={editImage.image_h}
+                    inputRef={imageHRef}
+                    sx={{
+                      display: "none",
+                    }}
+                    onChange={(file) => handleFileChange(file, "image_h")}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => handleImageRef(imageHRef)}
+                  >
+                    Change image_h
+                  </Button>
                 </Box>
               </Box>
             </Box>
