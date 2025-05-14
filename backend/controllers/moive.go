@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"strconv"
+	"strings"
 
 	"github.com/IAmJuniorDev/API-GO/db"
 	models "github.com/IAmJuniorDev/API-GO/models"
@@ -29,6 +31,17 @@ type MovieImage struct {
 	ImdbID string `json:"imdb_id" gorm:"primaryKey"`
 	ImageV []byte `json:"image_v" gorm:"type:LONGBLOB"`
 	ImageH []byte `json:"image_h" gorm:"type:LONGBLOB"`
+}
+
+type MovieImagePut struct {
+	ImdbID string `json:"imdb_id" gorm:"primaryKey"`
+	ImageV string `json:"image_v"`
+	ImageH string `json:"image_h"`
+}
+
+type ImageOnly struct {
+	ImageV string `json:"image_v"`
+	ImageH string `json:"image_h"`
 }
 
 func CreateMovies(ctx *fasthttp.RequestCtx) {
@@ -228,44 +241,34 @@ func AddPictureIntoMovie(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte("Movie not found"))
 		return
 	}
-	imageVFile, err := ctx.FormFile("image_v")
+	var image ImageOnly
+	if err := json.Unmarshal(ctx.PostBody(), &image); err != nil {
+		ctx.SetStatusCode(400)
+		ctx.SetBody([]byte("Invalid JSON"))
+		return
+	}
+	imageVSplit := strings.SplitN(image.ImageV, ",", 2)
+	if len(imageVSplit) != 2 {
+		ctx.SetStatusCode(400)
+		ctx.SetBody([]byte("Invalid image_v format"))
+		return
+	}
+	imageHSplit := strings.SplitN(image.ImageH, ",", 2)
+	if len(imageHSplit) != 2 {
+		ctx.SetStatusCode(400)
+		ctx.SetBody([]byte("Invalid image_v format"))
+		return
+	}
+	imageVBytes, err := base64.StdEncoding.DecodeString(imageVSplit[1])
 	if err != nil {
 		ctx.SetStatusCode(400)
-		ctx.SetBody([]byte("Missing image_v"))
+		ctx.SetBody([]byte("Invalid base64 for image_v"))
 		return
 	}
-	imageHFile, err := ctx.FormFile("image_h")
+	imageHBytes, err := base64.StdEncoding.DecodeString(imageHSplit[1])
 	if err != nil {
 		ctx.SetStatusCode(400)
-		ctx.SetBody([]byte("Missing image_h"))
-		return
-	}
-	imageV, err := imageVFile.Open()
-	if err != nil {
-		ctx.SetStatusCode(500)
-		ctx.SetBody([]byte("Failed to open image_v"))
-		return
-	}
-	defer imageV.Close()
-	imageH, err := imageHFile.Open()
-	if err != nil {
-		ctx.SetStatusCode(500)
-		ctx.SetBody([]byte("Failed to open image_h"))
-		return
-	}
-	defer imageH.Close()
-	imageVBytes := make([]byte, imageVFile.Size)
-	_, err = imageV.Read(imageVBytes)
-	if err != nil {
-		ctx.SetStatusCode(500)
-		ctx.SetBody([]byte("Failed to read image_v"))
-		return
-	}
-	imageHBytes := make([]byte, imageHFile.Size)
-	_, err = imageH.Read(imageHBytes)
-	if err != nil {
-		ctx.SetStatusCode(500)
-		ctx.SetBody([]byte("Failed to read image_h"))
+		ctx.SetBody([]byte("Invalid base64 for image_h"))
 		return
 	}
 	if len(imageVBytes) > 10*1024*1024 || len(imageHBytes) > 10*1024*1024 {
@@ -273,8 +276,7 @@ func AddPictureIntoMovie(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte("Image size exceeds 10 MB limit"))
 		return
 	}
-	var movie models.Movie
-	movie = old
+	movie := old
 	movie.ImageV = imageVBytes
 	movie.ImageH = imageHBytes
 	if err := db.DB.Save(&movie).Error; err != nil {
@@ -282,7 +284,11 @@ func AddPictureIntoMovie(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte("Failed to update movie"))
 		return
 	}
-	response, _ := json.Marshal(movie)
+	var imagePut MovieImage
+	imagePut.ImdbID = imdbID
+	imagePut.ImageV = imageVBytes
+	imagePut.ImageH = imageHBytes
+	response, _ := json.Marshal(imagePut)
 	ctx.SetStatusCode(200)
 	ctx.SetBody(response)
 }
